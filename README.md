@@ -174,28 +174,28 @@ sequenceDiagram
 ```mermaid
 graph LR
     subgraph Input
-        Q[User Query:<br/>'Show top products<br/>by revenue']
+        Q["User Query:<br/>Show top products<br/>by revenue"]
     end
     
     subgraph "Column Selection (RAG)"
         Q --> E1[Embedding Model]
-        E1 --> V1[Query Vector:<br/>[0.23, 0.45, ...]]
-        V1 --> S1[Similarity Search<br/>in DB Schema]
-        S1 --> C1[Top Relevant Columns:<br/>• sales.product_id<br/>• sales.quantity<br/>• sales.price<br/>• products.name]
+        E1 --> V1["Query Vector:<br/>0.23, 0.45, ..."]
+        V1 --> S1["Similarity Search<br/>in DB Schema"]
+        S1 --> C1["Top Relevant Columns:<br/>sales.product_id<br/>sales.quantity<br/>sales.price<br/>products.name"]
     end
     
     subgraph "Golden Queries (Few-Shot)"
         Q --> E2[Embedding Model]
-        E2 --> V2[Query Vector:<br/>[0.23, 0.45, ...]]
-        V2 --> S2[Similarity Search<br/>in Past Q&A]
-        S2 --> C2[Similar Examples:<br/>Q: 'top customers'<br/>A: SELECT ... LIMIT]
+        E2 --> V2["Query Vector:<br/>0.23, 0.45, ..."]
+        V2 --> S2["Similarity Search<br/>in Past Q&A"]
+        S2 --> C2["Similar Examples:<br/>Q: top customers<br/>A: SELECT LIMIT"]
     end
     
     subgraph "Prompt Assembly"
         C1 --> PA[Prompt Builder]
         C2 --> PA
-        Schema[Schema<br/>Description<br/>JSON] --> PA
-        Instructions[System<br/>Instructions] --> PA
+        Schema["Schema<br/>Description<br/>JSON"] --> PA
+        Instructions["System<br/>Instructions"] --> PA
         Q --> PA
         
         PA --> FP[Final Prompt]
@@ -269,7 +269,7 @@ graph TB
 ```mermaid
 flowchart TD
     Start[LLM Response] --> Extract[Extract SQL]
-    Extract --> Validate{Validate<br/>Syntax}
+    Extract --> Validate{"Validate<br/>Syntax"}
     
     Validate -->|✓ Valid| TestDB[Test on Database]
     Validate -->|✗ Invalid| Error1[Syntax Error]
@@ -277,11 +277,11 @@ flowchart TD
     TestDB -->|✓ Success| Return[Return SQL]
     TestDB -->|✗ Fail| Error2[Execution Error]
     
-    Error1 --> Repair1{Retry<br/>Count < Max?}
-    Error2 --> Repair2{Retry<br/>Count < Max?}
+    Error1 --> Repair1{"Retry<br/>Count < Max?"}
+    Error2 --> Repair2{"Retry<br/>Count < Max?"}
     
-    Repair1 -->|Yes| Fix1[Build Repair Prompt:<br/>'Above completion has<br/>invalid syntax...<br/>Please fix.']
-    Repair2 -->|Yes| Fix2[Build Repair Prompt:<br/>'Query failed:<br/>{error}<br/>Please fix.']
+    Repair1 -->|Yes| Fix1["Build Repair Prompt:<br/>Above completion has<br/>invalid syntax<br/>Please fix"]
+    Repair2 -->|Yes| Fix2["Build Repair Prompt:<br/>Query failed<br/>Please fix"]
     
     Repair1 -->|No| Fail[Raise Exception]
     Repair2 -->|No| Fail
@@ -309,7 +309,7 @@ flowchart TD
 ```mermaid
 graph TB
     subgraph "Backend Processing"
-        Intent[User Intent] --> Route{Visualization<br/>Hint}
+        Intent[User Intent] --> Route{"Visualization<br/>Hint"}
         
         Route -->|auto| Gen1[Generate SQL Only]
         Route -->|table| Gen2[Generate SQL + Execute]
@@ -318,25 +318,25 @@ graph TB
     end
     
     subgraph "Tool Call Assembly"
-        Gen1 --> T1[Tool Call 1:<br/>display_code<br/>args: {language: 'sql', code: '...'}]
+        Gen1 --> T1["Tool Call 1:<br/>display_code<br/>language: sql"]
         
-        Gen2 --> T2A[Tool Call 1:<br/>display_code]
-        Gen2 --> T2B[Tool Call 2:<br/>display_table<br/>args: {columns: [...], data: [...]}]
+        Gen2 --> T2A["Tool Call 1:<br/>display_code"]
+        Gen2 --> T2B["Tool Call 2:<br/>display_table<br/>columns and data"]
         
-        Gen3 --> T3A[Tool Call 1:<br/>display_code]
-        Gen3 --> T3B[Tool Call 2:<br/>render_vegalite<br/>args: {$schema: '...', mark: '...'}]
+        Gen3 --> T3A["Tool Call 1:<br/>display_code"]
+        Gen3 --> T3B["Tool Call 2:<br/>render_vegalite<br/>schema and mark"]
         
-        Gen4 --> T4A[Tool Call 1:<br/>display_code]
-        Gen4 --> T4B[Tool Call 2:<br/>render_geospatial<br/>args: {type: 'FeatureCollection', ...}]
+        Gen4 --> T4A["Tool Call 1:<br/>display_code"]
+        Gen4 --> T4B["Tool Call 2:<br/>render_geospatial<br/>FeatureCollection"]
     end
     
     subgraph "Response Format"
-        T1 --> R1[ChatCompletion:<br/>tool_calls: [T1]]
-        T2A --> R2[ChatCompletion:<br/>tool_calls: [T2A, T2B]]
+        T1 --> R1["ChatCompletion:<br/>tool_calls array"]
+        T2A --> R2["ChatCompletion:<br/>tool_calls array"]
         T2B --> R2
-        T3A --> R3[ChatCompletion:<br/>tool_calls: [T3A, T3B]]
+        T3A --> R3["ChatCompletion:<br/>tool_calls array"]
         T3B --> R3
-        T4A --> R4[ChatCompletion:<br/>tool_calls: [T4A, T4B]]
+        T4A --> R4["ChatCompletion:<br/>tool_calls array"]
         T4B --> R4
     end
     
